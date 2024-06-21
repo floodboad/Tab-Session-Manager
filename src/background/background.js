@@ -67,6 +67,7 @@ const addListeners = () => {
 
 let IsInit = false;
 const init = async () => {
+  console.log('----------->background/background.js init');
   await initSettings();
   overWriteLogLevel();
   updateLogLevel();
@@ -95,6 +96,7 @@ const onStartupListener = async () => {
 };
 
 const onMessageListener = async (request, sender, sendResponse) => {
+  // console.log("----->onMessageListener():", request)
   log.info(logDir, "onMessageListener()", request);
   switch (request.message) {
     case "save": {

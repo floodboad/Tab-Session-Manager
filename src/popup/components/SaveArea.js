@@ -40,9 +40,11 @@ export default class SaveArea extends Component {
   };
 
   saveSession = () => {
+    console.log('----------> saveSession');
     const input = this.props.saveAreaRef.current;
     const name = input.value;
     const defaultBehavior = getSettings("saveButtonBehavior");
+    console.log('----------> defaultBehavior', defaultBehavior);
     this.props.saveSession(name, defaultBehavior);
   };
 

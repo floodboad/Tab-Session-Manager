@@ -31,6 +31,7 @@ import Error from "./Error";
 import DonationMessage from "./DonationMessage";
 import "../styles/PopupPage.scss";
 import { makeSearchInfo } from "../../common/makeSearchInfo";
+import { saveCurrentSession } from "../../background/save";
 
 const logDir = "popup/components/PopupPage";
 
@@ -391,8 +392,12 @@ export default class PopupPage extends Component {
   };
 
   saveSession = async (name, property) => {
+    console.log('------->logdir : ', logDir);
     log.info(logDir, "saveSession()", name, property);
     try {
+
+      const afterSession = await saveCurrentSession(name, [], property);
+      console.log('------>saved session : ', afterSession);
       const savedSession = await sendSessionSaveMessage(name, property);
       this.selectSession(savedSession.id);
       this.openNotification({

@@ -2,7 +2,8 @@ import browser from "webextension-polyfill";
 import log from "loglevel";
 import { getSettings, setSettings } from "../settings/settings";
 import getSessions from "./getSessions";
-import { listFiles, uploadSession, downloadFile, deleteFile } from "./cloudAPIs";
+// import { listFiles, uploadSession, downloadFile, deleteFile } from "./cloudAPIs";
+import { listFiles, uploadSession, downloadFile, deleteFile } from "./cloudAPIs_gitee";
 import { refreshAccessToken } from "./cloudAuth";
 import { saveSession, updateSession } from "./save";
 import { showSyncErrorBadge, hideBadge } from "./setBadge";
@@ -103,48 +104,59 @@ export const getSyncStatus = () => {
 
 let isSyncing = false;
 export const syncCloud = async () => {
-  if (isSyncing) return;
+  console.log('----------> syncCloud 1 ');
+  // if (isSyncing) return;
   isSyncing = true;
   log.log(logDir, "syncCloud()");
   hideBadge();
+  console.log('----------> syncCloud 2 ');
+
 
   updateSyncStatus(syncStatus.pending);
-  const files = await listFiles().catch(e => null);
-  if (files === null) {
-    log.error(logDir, "syncCloud() listFiles");
-    isSyncing = false;
-    updateSyncStatus(syncStatus.none);
-    return;
-  }
+  console.log('----------> syncCloud 2-1 ');
+  // const files = await listFiles().catch(e => null);
+  const files = [];
+
+  console.log('----------> syncCloud 3 ', files);
+  // if (files === null) {
+  //   log.error(logDir, "syncCloud() listFiles");
+  //   isSyncing = false;
+  //   updateSyncStatus(syncStatus.none);
+  //   return;
+  // }
   const sessions = (await getSessions()).filter(session => !session.tag.includes("temp"));
   const removedQueue = getSettings("removedQueue") || [];
 
   const lastSyncTime = getSettings("lastSyncTime") || 0;
   const currentTime = Date.now();
 
-  const shouldRemoveFiles = getShouldRemoveFiles(files, sessions, removedQueue);
-  const shouldDownloadFiles = getShouldDownloadFiles(files, sessions, shouldRemoveFiles);
+  // const shouldRemoveFiles = getShouldRemoveFiles(files, sessions, removedQueue);
+  // const shouldDownloadFiles = getShouldDownloadFiles(files, sessions, shouldRemoveFiles);
   const shouldUploadSessions = getShouldUploadSessions(files, sessions, lastSyncTime);
 
-  for (const [index, file] of shouldDownloadFiles.entries()) {
-    updateSyncStatus(syncStatus.download, index + 1, shouldDownloadFiles.length);
-    const downloadedSession = await downloadFile(file.id);
-    const isUpdate = sessions.some(session => session.id === downloadedSession.id);
-    if (isUpdate) updateSession(downloadedSession, true, false, true);
-    else saveSession(downloadedSession, true, true);
-  }
 
+  // for (const [index, file] of shouldDownloadFiles.entries()) {
+  //   updateSyncStatus(syncStatus.download, index + 1, shouldDownloadFiles.length);
+  //   const downloadedSession = await downloadFile(file.id);
+  //   const isUpdate = sessions.some(session => session.id === downloadedSession.id);
+  //   if (isUpdate) updateSession(downloadedSession, true, false, true);
+  //   else saveSession(downloadedSession, true, true);
+  // }
+
+  console.log('----------> syncCloud 4 ', shouldUploadSessions);
   for (const [index, session] of shouldUploadSessions.entries()) {
     updateSyncStatus(syncStatus.upload, index + 1, shouldUploadSessions.length);
     const sameIdFile = files.find(file => file.name === session.id);
+
+    console.log('----------> syncCloud 5 ', sameIdFile);
     if (sameIdFile) await uploadSession(session, sameIdFile.id);
     else await uploadSession(session);
   }
 
-  for (const [index, file] of shouldRemoveFiles.entries()) {
-    updateSyncStatus(syncStatus.delete, index + 1, shouldRemoveFiles.length);
-    await deleteFile(file.id);
-  }
+  // for (const [index, file] of shouldRemoveFiles.entries()) {
+  //   updateSyncStatus(syncStatus.delete, index + 1, shouldRemoveFiles.length);
+  //   await deleteFile(file.id);
+  // }
 
   setSettings("lastSyncTime", currentTime);
   setSettings("removedQueue", []);
@@ -165,15 +177,15 @@ export const pushRemovedQueue = id => {
 
 let autoSyncTimer;
 export const syncCloudAuto = () => {
-  const isLoggedIn = getSettings("signedInEmail");
-  const enabledAutoSync = getSettings("enabledAutoSync");
-  if (!(isLoggedIn && enabledAutoSync)) return;
+  // const isLoggedIn = getSettings("signedInEmail");
+  // const enabledAutoSync = getSettings("enabledAutoSync");
+  // if (!(isLoggedIn && enabledAutoSync)) return;
 
   clearTimeout(autoSyncTimer);
   autoSyncTimer = setTimeout(async () => {
     try {
       //Check sign in required
-      await refreshAccessToken(false);
+      // await refreshAccessToken(false);
       syncCloud();
     } catch (e) {
       log.error(logDir, "syncCloudAuto()", "Sign in Required");

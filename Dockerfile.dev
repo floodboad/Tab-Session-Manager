@@ -2,10 +2,10 @@
 
 FROM dhub.kubesre.xyz/node:18.17.1
 
-WORKDIR /app
+WORKDIR /app/Tab-Session-Manager
 
 # Run yarn only if package.json changes
-COPY ./package.json ./
+COPY ./package.json .
 RUN yarn add core-js
 RUN node -v
 RUN npm -v

@@ -33,7 +33,7 @@ const generalConfig = {
         exclude: /node_modules/,
         test: /\.(js|jsx)$/,
         resolve: {
-          extensions: [".js", ".jsx"]
+          extensions: [".ts", ".js", ".jsx"]
         }
       },
       {

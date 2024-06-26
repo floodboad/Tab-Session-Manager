@@ -110,7 +110,7 @@ async function sendMessage(message, options = {}) {
 }
 
 export async function saveSession(session, isSendResponce = true, saveBySync = false) {
-debugger;
+
   log.log(logDir, "saveSession()", session, isSendResponce);
   console.log('------> logDir: ', logDir);
   console.log('------> session: ', session, isSendResponce);

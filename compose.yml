@@ -11,8 +11,9 @@ services:
         ports:
             - '3300:3300'
         volumes:
-            - .:/app
-            - /app/node_modules
+            - .:/app/Tab-Session-Manager
+            - ../gitee-db:/app/gitee-db
+            - /app/Tab-Session-Manager/node_modules
 #    prod:
 #        image: nish1896/react-ts-prod
 #        build: .

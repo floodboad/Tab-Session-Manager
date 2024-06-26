@@ -7,6 +7,7 @@
     "browser-info": "^1.2.0",
     "clone": "^2.1.2",
     "core-js": "2",
+    "gitee-db": "../gitee-db/",
     "lodash": "^4.17.21",
     "loglevel": "^1.6.7",
     "moment": "^2.29.4",

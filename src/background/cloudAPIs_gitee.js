@@ -2,9 +2,18 @@ import axios from "axios";
 import log from "loglevel";
 import { refreshAccessToken } from "./cloudAuth";
 import { sliceTextByBytes } from "../common/sliceTextByBytes";
+import {registry, DB} from 'gitee-db'
 
 const logDir = "background/cloudAPIs";
 
+
+registry({
+  access_token: '5b6296905da67e9c4568afe2846fb9de',
+  owner: 'cubemagic',
+  repo: 'mytabsessions',
+});
+
+const db = new DB();
 export const listFiles = async (pageToken = "") => {
   log.log(logDir, "listFiles()");
   const accessToken = await refreshAccessToken();
@@ -115,16 +124,23 @@ export const uploadSession = async (session, fileId = "") => {
   // const url =  `https://gitee.com/api/v5/repos/cubemagic/mytabsessions/contents${fileId ? `/${fileId}` : ""}`;
   let tmpfileId = fileId ? fileId : session.id;
   // const url =  `https://gitee.com/api/v5/repos/cubemagic/mytabsessions/contents${`/${tmpfileId}`}`;
-  const url =  `https://gitee.com/api/v5/repos/cubemagic/mytabsessions/contents${`/${tmpfileId}.json`}`;
+  // const url =  `https://gitee.com/api/v5/repos/cubemagic/mytabsessions/contents${`/${tmpfileId}.json`}`;
+  //
+  // const result = await fetch(url, init).catch(e => {
+  //   console.log('--------->create error : ',e);
+  //   log.error(logDir, "uploadSession()", e);
+  // });
 
-  const result = await fetch(url, init).catch(e => {
-    console.log('--------->create error : ',e);
-    log.error(logDir, "uploadSession()", e);
-  });
-  const resultJson = await result.json();
-  if (resultJson.error) log.error(logDir, "uploadSession()", resultJson);
-  log.log(logDir, "=>uploadSession()", resultJson);
+
+  const sessionTab = await db.table('sessions');
+  const result = await sessionTab.insert(JSON.stringify(session));
+  console.log('------>result : ', result);
+  // const resultJson = await result.json();
+  // if (resultJson.error) log.error(logDir, "uploadSession()", resultJson);
+  // log.log(logDir, "=>uploadSession()", resultJson);
 };
+
+
 
 function fileToBase64(file) {
   return new Promise((resolve, reject) => {
